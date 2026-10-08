@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="css/L.Control.Locate.min.css">
         <link rel="stylesheet" href="css/qgis2web.css">
         <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/leaflet.photon.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
@@ -40,6 +41,7 @@
         <script src="js/labels.js"></script>
         <script src="js/leaflet.photon.js"></script>
         <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
         <script src="data/DISTANCIAS_2.js"></script>
         <script src="data/PUNTOS_3.js"></script>
         <script src="data/DRENAJES_4.js"></script>
@@ -64,7 +66,7 @@
         }
         var map = L.map('map', {
             zoomControl:false, maxZoom:28, minZoom:1
-        }).fitBounds([[4.764495274357678,-76.09497528718015],[4.81428358947376,-75.9980702915461]]);
+        }).fitBounds([[4.781552966095721,-76.07406840461415],[4.794000380084129,-76.04984230332158]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/qgis2web/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -268,6 +270,9 @@
                     </tr>\
                     <tr>\
                         <td class="visible-with-data" id="PUNTO" colspan="2"><strong>PUNTO</strong><br />' + (feature.properties['PUNTO'] !== null ? autolinker.link(String(feature.properties['PUNTO']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td class="visible-with-data" id="DIRECCION" colspan="2"><strong>DIRECCION</strong><br />' + (feature.properties['DIRECCION'] !== null ? autolinker.link(String(feature.properties['DIRECCION']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -515,7 +520,7 @@
         const url = {"Nominatim OSM": "https://nominatim.openstreetmap.org/search?format=geojson&addressdetails=1&",
         "France BAN": "https://api-adresse.data.gouv.fr/search/?"}
         var photonControl = L.control.photon({
-            url: url["France BAN"],
+            url: url["Nominatim OSM"],
             feedbackLabel: '',
             position: 'topleft',
             includePosition: true,
@@ -636,6 +641,16 @@
               addLabel(layer, i);
               i++;
         });
+        map.addControl(new L.Control.Search({
+            layer: layer_TOPACIO_6,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'NOMBRE'}));
+        if (typeof url === 'undefined') {
+            document.getElementsByClassName('search-button')[0].className += ' fa fa-binoculars';
+        } else {
+            document.getElementsByClassName('search-button')[1].className += ' fa fa-binoculars';
+        }
         resetLabels([layer_DISTANCIAS_2,layer_PUNTOS_3,layer_DRENAJES_4,layer_TOPACIO_6]);
         map.on("zoomend", function(){
             resetLabels([layer_DISTANCIAS_2,layer_PUNTOS_3,layer_DRENAJES_4,layer_TOPACIO_6]);
